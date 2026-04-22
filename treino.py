@@ -72,9 +72,9 @@ if not st.session_state['entrou_app']:
     st.markdown("""
     ### Bem-vindo(a) ao painel analítico do **Guia de Seleções**!
     
-    Este projeto é uma aplicação interativa desenvolvida para unir dados de futebol internacional com técnicas de Análise de Dados e de Inteligência Artificial. 
+    Este projeto é uma aplicação interativa desenvolvida para unir dados de futebol internacional com técnicas de Análise de Dados e de Inteligência Artificial. Nele será contemplado duas diferentes visões, uma mais voltada aos dados esportivos, e outra mais voltada para as técnicas.
     
-    Nosso objetivo é analisar o histórico de todas as partidas de seleções registradas desde 1913, comparar os resultados previstos por diferentes técnicas de Inteligência Artificial e de Séries Temporais, e utilizá-las para projetar o desempenho dessas equipes para o ano de 2026.
+    O objetivo do painel é analisar o histórico de todas as partidas de seleções registradas desde 1913, comparar os resultados previstos por diferentes técnicas de Inteligência Artificial e de Séries Temporais, e utilizá-las para projetar o desempenho dessas equipes para o ano de 2026.
     """)
     
     
