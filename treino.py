@@ -93,13 +93,13 @@ if not st.session_state['entrou_app']:
 st.sidebar.title("Guia de Seleções")
 modo_app = st.sidebar.radio(
     "Escolha o Painel:",
-    ["Visão Esportiva", "Visão Técnica"]
+    ["Comparação de técnicas computacionais", "Comparação de dados esportivos"]
 )
 
 # ---------------------------------------------------------------------
 # MÓDULO 1: PAINEL DE FUTEBOL E DADOS
 # ---------------------------------------------------------------------
-if modo_app == "Visão Esportiva":
+if modo_app == "Comparação de técnicas computacionais":
     st.title("Seleções: Caminho para 2026")
     st.markdown("Bem-vindo ao painel esportivo! Utilizamos Inteligência Artificial para identificar a pontuação de cada seleção para o ano de 2026.")
     
@@ -173,7 +173,7 @@ if modo_app == "Visão Esportiva":
                 # 1. Linha original azul contínua (Performance Real)
                 fig_linha.add_trace(go.Scatter(
                     x=df_historico['year'], y=df_historico['performance_score'], 
-                    mode='lines+markers', name='Performance Real', 
+                    mode='lines+markers', name='Desempenho Real', 
                     line=dict(color='#1f77b4', width=3)
                 ))
                 
@@ -190,7 +190,7 @@ if modo_app == "Visão Esportiva":
                 ))
                 
                 fig_linha.update_layout(
-                    xaxis_title="Ano", yaxis_title="Performance Escalonada (0 a 3)", 
+                    xaxis_title="Ano", yaxis_title="Desempenho Escalonado (0 a 3)", 
                     height=350, yaxis=dict(range=[-0.2, 3.2]), 
                     margin=dict(l=20, r=20, t=30, b=20)
                 )
@@ -233,7 +233,7 @@ if modo_app == "Visão Esportiva":
                     ca1.metric("Partidas Disputadas", f"{jogos}")
                     ca2.metric("V - E - D", f"{vitorias} - {empates} - {derrotas}")
                     ca3.metric("Aproveitamento", f"{aproveitamento:.1f}%")
-                    ca4.metric("Gols Pró", f"{int(gols_feitos_ano)}")
+                    ca4.metric("Gols", f"{int(gols_feitos_ano)}")
                     ca5.metric("Gols Contra", f"{int(gols_sofridos_ano)}")
                     
                     st.markdown("##### Lista Oficial de Partidas")
@@ -256,12 +256,29 @@ if modo_app == "Visão Esportiva":
 # MÓDULO 2: PAINEL DE DATA SCIENCE E TÉCNICAS
 # ---------------------------------------------------------------------
 
-elif modo_app == "Visão Técnica":
+elif modo_app == "Comparação de dados esportivos":
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Configuração da Simulação")
     
     lista_modelos_disponiveis = ["ARIMA", "Exponencial", "LSTM", "Prophet", "Random Forest", "XGBoost"]
-    modelos_escolhidos = st.sidebar.multiselect("Escolha as Técnicas:", options=lista_modelos_disponiveis, default=["Random Forest", "XGBoost"])
+    
+    # Texto formatado que aparecerá ao passar o mouse na interrogação
+    texto_ajuda_modelos = """
+    **Base dos algoritmos:**
+    * **ARIMA:** Tendências e médias móveis do passado.
+    * **Exponencial:** Dá mais peso aos resultados mais recentes.
+    * **LSTM:** Rede neural com memória para analisar sequências.
+    * **Prophet:** Curvas de tendência contínua e sazonalidade.
+    * **Random Forest:** Votação entre múltiplas árvores de decisão.
+    * **XGBoost:** Árvores otimizadas que aprendem a corrigir seus próprios erros.
+    """
+
+    modelos_escolhidos = st.sidebar.multiselect(
+        "Escolha as Técnicas:", 
+        options=lista_modelos_disponiveis, 
+        default=["Random Forest", "XGBoost"],
+        help=texto_ajuda_modelos
+    )
 
     anos_com_gabarito = df_full['year'].unique()
     # MUDANÇA AQUI: Adicionado reverse=True
@@ -316,8 +333,26 @@ elif modo_app == "Visão Técnica":
 
     if dados_tabela:
         df_leaderboard = pd.DataFrame(dados_tabela).set_index("Técnica")
-        st.dataframe(df_leaderboard.style.highlight_min(subset=["Erro Médio (MAE) ↓", "RMSE ↓"], color='#90ee90')
-                                       .highlight_max(subset=["Correlação (R) ↑"], color='#90ee90'), use_container_width=True)
+        
+        # Configuração das colunas para adicionar o (?) no cabeçalho da tabela
+        config_colunas = {
+            "Erro Médio (MAE) ↓": st.column_config.NumberColumn(
+                help="A distância média entre a previsão e o real. Quanto menor, melhor."
+            ),
+            "RMSE ↓": st.column_config.NumberColumn(
+                help="Similar ao MAE, mas penaliza erros grandes com maior rigor."
+            ),
+            "Correlação (R) ↑": st.column_config.NumberColumn(
+                help="Mede se a IA seguiu a tendência de subida ou descida. 1.0 é o ajuste perfeito."
+            )
+        }
+
+        st.dataframe(
+            df_leaderboard.style.highlight_min(subset=["Erro Médio (MAE) ↓", "RMSE ↓"], color='#90ee90')
+                                .highlight_max(subset=["Correlação (R) ↑"], color='#90ee90'), 
+            use_container_width=True,
+            column_config=config_colunas
+        )
 
     st.markdown("---")
     primeiro_modelo = list(dict_resultados.keys())[0]
@@ -368,10 +403,17 @@ elif modo_app == "Visão Técnica":
         
         st.markdown("##### Dados Históricos Utilizados")
         df_team = df_ref_target[df_ref_target['team'] == time_selecionado].iloc[0]
-        st.table(pd.DataFrame({'Métrica': ['Performance No Ano Anterior', 'Performance de 2 Anos Atrás', 'Média De Gols Marcados No Ano Anterior', 'Média De Gols Marcados 2 Anos Atrás'], 'Valor': [f"{df_team['prev_score_1']:.4f}", f"{df_team['prev_score_2']:.4f}", f"{df_team['prev_goals_1']:.2f}", f"{df_team['prev_goals_2']:.2f}"]}).set_index('Métrica'))
+        st.table(pd.DataFrame({'Métrica': ['Desempenho no ano anterior', 'Desempenho de 2 anos atrás', 'Média de gols marcados no ano anterior', 'Média de gols marcados 2 anos atrás'], 'Valor': [f"{df_team['prev_score_1']:.4f}", f"{df_team['prev_score_2']:.4f}", f"{df_team['prev_goals_1']:.2f}", f"{df_team['prev_goals_2']:.2f}"]}).set_index('Métrica'))
 
     with tab2:
-        st.markdown("<h4 style='margin-bottom: -15px;'><b> Clique em qualquer bolinha para analisar a seleção!</b></h4>", unsafe_allow_html=True)
+        st.markdown("""
+        **Como interpretar o gráfico de dispersão:** Cada bolinha representa o desempenho de uma seleção. A **linha tracejada diagonal** representa o cenário de acerto perfeito (onde a pontuação prevista pela IA é exatamente igual à real). 
+        
+        * **Perto da linha:** Previsões precisas e confiáveis.
+        * **Longe da linha:** Grandes erros do modelo.
+        
+        **Dica: Clique em qualquer bolinha no gráfico para isolar a análise daquela seleção.** 
+        """)
         fig_scatter = go.Figure()
         cores_linhas = px.colors.qualitative.Plotly
         for i, mod in enumerate(modelos_escolhidos):
@@ -397,7 +439,7 @@ elif modo_app == "Visão Técnica":
                 ))
                 
         fig_scatter.add_shape(type="line", line=dict(dash='dash', color='gray'), x0=0, y0=0, x1=3, y1=3)
-        fig_scatter.update_layout(xaxis_title="Performance Real", yaxis_title="Performance Prevista", height=500, clickmode='event+select', margin=dict(t=30))
+        fig_scatter.update_layout(xaxis_title="Desempenho Real", yaxis_title="Desempenho Previsto", height=500, clickmode='event+select', margin=dict(t=30))
         evento_clique = st.plotly_chart(fig_scatter, use_container_width=True, on_select="rerun", selection_mode="points")
         
         if evento_clique and len(evento_clique.selection['points']) > 0:
