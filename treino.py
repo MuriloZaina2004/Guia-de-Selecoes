@@ -93,7 +93,7 @@ if not st.session_state['entrou_app']:
 st.sidebar.title("Guia de Seleções")
 modo_app = st.sidebar.radio(
     "Escolha o Painel:",
-    ["Comparação de técnicas computacionais", "Comparação de dados esportivos"]
+    ["Comparação de dados esportivos", "Comparação de técnicas computacionais"] 
 )
 
 # ---------------------------------------------------------------------
