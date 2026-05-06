@@ -99,7 +99,7 @@ modo_app = st.sidebar.radio(
 # ---------------------------------------------------------------------
 # MÓDULO 1: PAINEL DE FUTEBOL E DADOS
 # ---------------------------------------------------------------------
-if modo_app == "Comparação de técnicas computacionais":
+if modo_app == "Comparação de dados esportivos":
     st.title("Seleções: Caminho para 2026")
     st.markdown("Bem-vindo ao painel esportivo! Utilizamos Inteligência Artificial para identificar a pontuação de cada seleção para o ano de 2026.")
     
@@ -256,7 +256,7 @@ if modo_app == "Comparação de técnicas computacionais":
 # MÓDULO 2: PAINEL DE DATA SCIENCE E TÉCNICAS
 # ---------------------------------------------------------------------
 
-elif modo_app == "Comparação de dados esportivos":
+elif modo_app == "Comparação de técnicas computacionais":
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Configuração da Simulação")
     
