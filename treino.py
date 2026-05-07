@@ -62,7 +62,7 @@ df_full = carregar_dados_anuais()
 df_previsoes_banco = carregar_banco_previsoes()
 
 # ---------------------------------------------------------------------
-# MÓDULO 0: TELA DE ABERTURA (SPLASH SCREEN)
+# MÓDULO 0: TELA DE ABERTURA
 # ---------------------------------------------------------------------
 if 'entrou_app' not in st.session_state:
     st.session_state['entrou_app'] = False
@@ -93,13 +93,13 @@ if not st.session_state['entrou_app']:
 st.sidebar.title("Guia de Seleções")
 modo_app = st.sidebar.radio(
     "Escolha o Painel:",
-    ["Comparação de dados esportivos", "Comparação de técnicas computacionais"] 
+    ["Análise dos dados esportivos", "Análise das técnicas computacionais usadas para previsão"] 
 )
 
 # ---------------------------------------------------------------------
 # MÓDULO 1: PAINEL DE FUTEBOL E DADOS
 # ---------------------------------------------------------------------
-if modo_app == "Comparação de dados esportivos":
+if modo_app == "Análise dos dados esportivos":
     st.title("Seleções: Caminho para 2026")
     st.markdown("Bem-vindo ao painel esportivo! Utilizamos Inteligência Artificial para identificar a pontuação de cada seleção para o ano de 2026.")
     
@@ -256,7 +256,7 @@ if modo_app == "Comparação de dados esportivos":
 # MÓDULO 2: PAINEL DE DATA SCIENCE E TÉCNICAS
 # ---------------------------------------------------------------------
 
-elif modo_app == "Comparação de técnicas computacionais":
+elif modo_app == "Análise das técnicas computacionais usadas para previsão":
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Configuração da Simulação")
     
