@@ -61,13 +61,22 @@ df_bruto = carregar_dados_brutos()
 df_full = carregar_dados_anuais()
 df_previsoes_banco = carregar_banco_previsoes()
 
-# ---------------------------------------------------------------------
-# MÓDULO 0: TELA DE ABERTURA
-# ---------------------------------------------------------------------
-if 'entrou_app' not in st.session_state:
-    st.session_state['entrou_app'] = False
+# --- MENU PRINCIPAL (ROTEAMENTO) ---
+st.sidebar.title("Guia de Seleções")
+modo_app = st.sidebar.radio(
+    "Escolha o Painel:",
+    [
+        "Sobre o Site", 
+        "Análise dos dados esportivos ", 
+        "Análise das técnicas computacionais usadas para previsão"
+    ] 
+)
 
-if not st.session_state['entrou_app']:
+# ---------------------------------------------------------------------
+# MÓDULO 0: SOBRE O SITE
+# ---------------------------------------------------------------------
+if modo_app == "Sobre o Site":
+    st.title("Sobre o Site")
     
     st.markdown("""
     ### Bem-vindo(a) ao painel analítico do **Guia de Seleções**!
@@ -76,30 +85,12 @@ if not st.session_state['entrou_app']:
     
     O objetivo do painel é analisar o histórico de todas as partidas de seleções registradas desde 1913, comparar os resultados previstos por diferentes técnicas de Inteligência Artificial e de Séries Temporais, e utilizá-las para projetar o desempenho dessas equipes para o ano de 2026.
     """)
-    
-    
-    # Centraliza o botão na tela
-    col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-    with col_btn2:
-        if st.button("Acessar aplicação", type="primary", use_container_width=True):
-            st.session_state['entrou_app'] = True
-            st.rerun()
-            
-    # O st.stop() impede que o menu lateral e o resto do app carreguem antes do clique
-    st.stop()
 
-
-# --- MENU PRINCIPAL (ROTEAMENTO) ---
-st.sidebar.title("Guia de Seleções")
-modo_app = st.sidebar.radio(
-    "Escolha o Painel:",
-    ["Análise dos dados esportivos", "Análise das técnicas computacionais usadas para previsão"] 
-)
 
 # ---------------------------------------------------------------------
 # MÓDULO 1: PAINEL DE FUTEBOL E DADOS
 # ---------------------------------------------------------------------
-if modo_app == "Análise dos dados esportivos":
+elif modo_app == "Análise dos dados esportivos ":
     st.title("Seleções: Caminho para 2026")
     st.markdown("Bem-vindo ao painel esportivo! Utilizamos Inteligência Artificial para identificar a pontuação de cada seleção para o ano de 2026.")
     
@@ -321,7 +312,9 @@ elif modo_app == "Análise das técnicas computacionais usadas para previsão":
         st.error(f"Nenhum dado pré-calculado encontrado para o Gap de {horizonte_anos} anos no corte de {cutoff_year}.")
         st.stop()
 
-    st.subheader("Qual técnica previu melhor?")
+    texto_explicacao_tabela = "Cálculo da Tabela: O sistema reúne todas as seleções que jogaram no ano escolhido. Ele calcula a diferença entre a previsão e o resultado real de cada seleção individualmente, e depois extrai a média global para definir qual modelo foi melhor no 'quadro geral'."
+    st.subheader("Qual técnica previu melhor?", help=texto_explicacao_tabela)
+
     dados_tabela = []
     for mod, df_m in dict_resultados.items():
         df_m_target = df_m[df_m['year'] == target_year]
@@ -337,13 +330,13 @@ elif modo_app == "Análise das técnicas computacionais usadas para previsão":
         # Configuração das colunas para adicionar o (?) no cabeçalho da tabela
         config_colunas = {
             "Erro Médio (MAE) ↓": st.column_config.NumberColumn(
-                help="A distância média entre a previsão e o real. Quanto menor, melhor."
+                help="A distância média global entre as previsões e a realidade. Quanto menor, melhor."
             ),
             "RMSE ↓": st.column_config.NumberColumn(
-                help="Similar ao MAE, mas penaliza erros grandes com maior rigor."
+                help="Similar ao MAE, mas penaliza com maior rigor os modelos que erraram de forma extrema (zebras)."
             ),
             "Correlação (R) ↑": st.column_config.NumberColumn(
-                help="Mede se a IA seguiu a tendência de subida ou descida. 1.0 é o ajuste perfeito."
+                help="Mede se a IA conseguiu acompanhar a tendência de subida ou descida geral do ano. 1.0 é o ajuste perfeito."
             )
         }
 
@@ -412,8 +405,7 @@ elif modo_app == "Análise das técnicas computacionais usadas para previsão":
         * **Perto da linha:** Previsões precisas e confiáveis.
         * **Longe da linha:** Grandes erros do modelo.
         
-        **Dica: Clique em qualquer bolinha no gráfico para isolar a análise daquela seleção.** 
-        """)
+        **Dica: Clique em qualquer bolinha no gráfico para isolar a análise daquela seleção.** """)
         fig_scatter = go.Figure()
         cores_linhas = px.colors.qualitative.Plotly
         for i, mod in enumerate(modelos_escolhidos):
